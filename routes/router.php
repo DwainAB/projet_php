@@ -3,10 +3,11 @@
 $routes = [
     '/test-subskill/index.php/api/test' => 'test',
     '/test-subskill/index.php/api/get/jobs' => 'list',
+    '/test-subskill/index.php/api/jobs/add' => 'add',
     '/test-subskill/index.php/api/jobs/edit' => 'edit',
     '/test-subskill/index.php/api/jobs/create' => 'create',
     '/test-subskill/index.php/api/jobs/delete/{id}' => 'delete',
-    // Ajoutez d'autres routes au besoin
+    '/test-subskill/index.php/api/get/jobs/filtered' => 'filter',
 ];
 
 function handleRequest($requestUri, $controller) {
