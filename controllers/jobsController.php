@@ -13,17 +13,21 @@ class JobController {
 
     public function list() {
         header('Content-Type: application/json');
-
-        $offres = $this->model->getAllJobs();
-
+    
+        // Récupérer le numéro de page à partir de la requête GET, par défaut à 1
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    
+        $offres = $this->model->getAllJobs($page);
+    
         if (empty($offres)) {
             http_response_code(404);
             echo json_encode(["message" => "Aucune offre d'emploi trouvée."]);
-            return; 
+            return;
         }
-
+    
         echo json_encode($offres, JSON_UNESCAPED_UNICODE);
     }
+    
 
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

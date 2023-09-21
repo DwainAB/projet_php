@@ -7,11 +7,16 @@ class JobModel {
         $this->pdo = $pdo;
     }
 
-    public function getAllJobs() {
-        $query = "SELECT * FROM jobs";
-        $stmt = $this->pdo->query($query);
+    public function getAllJobs($page = 1, $perPage = 10) {
+        $offset = ($page - 1) * $perPage;
+        $query = "SELECT * FROM jobs LIMIT :offset, :perPage";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     public function getFilteredJobs($type_contract = null, $location = null, $type_job = null) {
         $query = "SELECT * FROM jobs WHERE 1=1";
