@@ -6,15 +6,19 @@ class JobController {
         $this->model = $model;
     }
 
+
+    /////////// Fonction de test
+
     public function test() {
         header('Content-Type: application/json');
         echo json_encode(["message" => "subskill API - Test"]);
     }
 
+
+    /////////// Fonction qui permet de récupérer toutes les offres
     public function list() {
         header('Content-Type: application/json');
     
-        // Récupérer le numéro de page à partir de la requête GET, par défaut à 1
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
     
         $offres = $this->model->getAllJobs($page);
@@ -29,6 +33,7 @@ class JobController {
     }
     
 
+    ///////////// Fonction qui permet d'ajouter une offre
     public function add() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
@@ -60,7 +65,7 @@ class JobController {
         }
     }
     
-
+    ////////////// Fonction qui permet de supprimer une offre
     public function delete($id) {
         if ($this->model->deleteJob($id)) {
             header('Content-Type: application/json');
@@ -71,6 +76,7 @@ class JobController {
         }
     }
 
+    ////////////// Fonction qui permet de filtrer les offres
     public function filter() {
         header('Content-Type: application/json');
 
@@ -92,6 +98,8 @@ class JobController {
         echo json_encode($offres, JSON_UNESCAPED_UNICODE);
     }
 
+    
+    ////////////// Fonction qui permet de modifier une offre
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
