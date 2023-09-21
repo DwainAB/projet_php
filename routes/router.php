@@ -4,10 +4,13 @@ $routes = [
     '/test-subskill/index.php/api/test' => 'test',
     '/test-subskill/index.php/api/get/jobs' => 'list',
     '/test-subskill/index.php/api/jobs/add' => 'add',
-    '/test-subskill/index.php/api/jobs/edit' => 'edit',
-    '/test-subskill/index.php/api/jobs/create' => 'create',
     '/test-subskill/index.php/api/jobs/delete/{id}' => 'delete',
     '/test-subskill/index.php/api/get/jobs/filtered' => 'filter',
+    '/test-subskill/index.php/api/user/register' => 'register',
+    '/test-subskill/index.php/api/user/login' => 'login',
+    '/test-subskill/index.php/api/user/logout' => 'logout',
+    '/test-subskill/index.php/api/jobs/update/{id}' => 'update',
+
 ];
 
 function handleRequest($requestUri, $controller) {

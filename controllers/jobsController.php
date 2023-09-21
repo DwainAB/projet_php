@@ -6,71 +6,56 @@ class JobController {
         $this->model = $model;
     }
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-    public function test(){
+    public function test() {
         header('Content-Type: application/json');
-        echo json_encode(["message" => "subskill API - Test"]); // Modifiez le message au besoin
-    } 
+        echo json_encode(["message" => "subskill API - Test"]);
+    }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-
-    //Fonction qui permet de récupérer tous les jobs
     public function list() {
-
-        header('Content-Type: application/json'); //on précise que l'on va envoyer du JSON
+        header('Content-Type: application/json');
 
         $offres = $this->model->getAllJobs();
 
-        if (empty($offres)) { //si aucun job n'est trouvé
-            echo "Aucune offre d'emploi trouvée.";
+        if (empty($offres)) {
+            http_response_code(404);
+            echo json_encode(["message" => "Aucune offre d'emploi trouvée."]);
             return; 
         }
 
         echo json_encode($offres, JSON_UNESCAPED_UNICODE);
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-
     public function add() {
-        // Vérifiez si les données ont été envoyées via POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Collectez les données soumises
-            $data = [
-                'title_job' => $_POST['title_job'],
-                'company_name' => $_POST['company_name'],
-                'description_job' => $_POST['description_job'],
-                'location' => $_POST['location'],
-                'type_contract' => $_POST['type_contract'],
-                'type_job' => $_POST['type_job'],
-            ];
+            
+            $keys = ['title_job', 'company_name', 'description_job', 'location', 'type_contract', 'type_job'];
+            $data = [];
 
-            // Appelez la fonction addJob de votre modèle
+            foreach ($keys as $key) {
+                $data[$key] = isset($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8') : null;
+            }
+
+            if (in_array(null, $data, true)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Données incomplètes ou incorrectes."]);
+                return;
+            }
+
             $success = $this->model->addJob($data);
 
             if ($success) {
-                http_response_code(201); // 201 Created
+                http_response_code(201);
                 echo json_encode(["message" => "Job ajouté avec succès."]);
             } else {
-                http_response_code(500); // 500 Internal Server Error
+                http_response_code(500);
                 echo json_encode(["error" => "Une erreur est survenue lors de l'ajout du job."]);
             }
         } else {
-            http_response_code(400); // 400 Bad Request
+            http_response_code(400);
             echo json_encode(["error" => "Mauvaise méthode de requête. Veuillez utiliser POST."]);
         }
     }
     
-///////////////////////////////////////////////////////////////////////////////////////////
-
-public function edit($id) {
-        // Logique pour modifier une annonce spécifique (identifiée par $id)
-        // Utilisez $this->pdo pour accéder à la base de données
-    }
-
-///////////////////////////////////////////////////////////////////////////////////////////
 
     public function delete($id) {
         if ($this->model->deleteJob($id)) {
@@ -81,22 +66,57 @@ public function edit($id) {
             echo json_encode(['error' => 'Erreur lors de la suppression']);
         }
     }
-    
-///////////////////////////////////////////////////////////////////////////////////////////
+
     public function filter() {
-        header('Content-Type: application/json'); // On précise que l'on va envoyer du JSON
+        header('Content-Type: application/json');
 
-        $type_contract = isset($_GET['type_contract']) ? $_GET['type_contract'] : null;
-        $location = isset($_GET['location']) ? $_GET['location'] : null;
-        $type_job = isset($_GET['type_job']) ? $_GET['type_job'] : null;
+        $keys = ['type_contract', 'location', 'type_job'];
+        $filters = [];
 
-        $offres = $this->model->getFilteredJobs($type_contract, $location, $type_job);
+        foreach ($keys as $key) {
+            $filters[$key] = isset($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8') : null;
+        }
 
-        if (empty($offres)) { // Si aucun job n'est trouvé avec les critères fournis
+        $offres = $this->model->getFilteredJobs($filters['type_contract'], $filters['location'], $filters['type_job']);
+
+        if (empty($offres)) {
+            http_response_code(404);
             echo json_encode(["message" => "Aucune offre d'emploi trouvée avec ces critères."]);
             return; 
         }
 
         echo json_encode($offres, JSON_UNESCAPED_UNICODE);
     }
+
+    public function update($id) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
+            $keys = ['title_job', 'company_name', 'description_job', 'location', 'type_contract', 'type_job'];
+            $data = [];
+    
+            foreach ($keys as $key) {
+                $data[$key] = isset($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8') : null;
+            }
+    
+            if (in_array(null, $data, true)) {
+                http_response_code(400);
+                echo json_encode(["error" => "Données incomplètes ou incorrectes."]);
+                return;
+            }
+    
+            $success = $this->model->updateJob($id, $data);
+    
+            if ($success) {
+                http_response_code(200);
+                echo json_encode(["message" => "Job mis à jour avec succès."]);
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "Une erreur est survenue lors de la mise à jour du job."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "Mauvaise méthode de requête. Veuillez utiliser POST."]);
+        }
+    }
+    
 }
